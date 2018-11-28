@@ -19,7 +19,7 @@ func (r *StudentController) CreateStudent(c *gin.Context) {
 	c.BindJSON(&newstudent)
 	isValid, err := newstudent.IsValid()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": fmt.Printf("new student validation has error %s ", err)})
+		c.JSON(http.StatusBadRequest, gin.H{"Error": fmt.Sprintf("new student validation has error %s ", err)})
 	}
 	if isValid == false {
 		c.JSON(http.StatusBadRequest, gin.H{"Error": "new student validation failed %s "})

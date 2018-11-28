@@ -5,11 +5,10 @@ import (
 	"github.com/richardsang2008/MathTestsGenerator/controllers"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/jinzhu/gorm"
 )
 
 func main() {
-	db,err:=gorm.Open()
+	//db,err:=gorm.Open()
 
 	// Set Gin to production mode
 	//gin.SetMode(gin.ReleaseMode)

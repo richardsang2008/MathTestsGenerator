@@ -1,20 +1,30 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/akath19/gin-zap"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"os"
 
 	"time"
 )
 
 type Routes struct {
+
 }
 
 func NewLogger() (*zap.Logger, error) {
 	cfg := zap.NewProductionConfig()
+	logdir :="logs"
+	logfile:="math.log"
+	var _, err = os.Stat(logdir)
+	if os.IsNotExist(err) {
+		_ = os.MkdirAll(logdir,0755)
+	}
+	logpath:=fmt.Sprintf("%s/%s",logdir,logfile)
 	cfg.OutputPaths = []string{
-		"logs/math.log",
+		logpath,
 	}
 	return cfg.Build()
 }
