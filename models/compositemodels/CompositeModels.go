@@ -24,4 +24,5 @@ type Quiz struct {
 	Score float64
 	QuizDate time.Time
 	Student Student
+	QuizItems []QuizItem
 }

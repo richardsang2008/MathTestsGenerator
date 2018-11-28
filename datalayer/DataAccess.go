@@ -3,6 +3,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/richardsang2008/MathTestsGenerator/models/dbmodels"
 	"time"
+	"github.com/richardsang2008/MathTestsGenerator/models/compositemodels"
 )
 
 type DataAccess struct {
@@ -72,5 +73,9 @@ func (r *DataAccess) AddQuiz (studentId string, score float64) int {
 	r.db.Create(&quiz)
 	return quiz.Id
 }
-func (r *DataAccess) GenerateAQuiz(studentId string)
+func (r *DataAccess) GenerateAQuiz(studentId string) compositemodels.Quiz {
+	studentdb:= r.GetStudentByStudentId(studentId)
+	student := compositemodels.Student{FirstName:studentdb.FirstName,MidName:studentdb.MidName, LastName:studentdb.LastName,}
+	retQuiz := compositemodels.Quiz{Id :0, QuizDate:time.Now(),Score:0, Student:student,QuizItems:[]compositemodels.QuizItem}
+}
 
