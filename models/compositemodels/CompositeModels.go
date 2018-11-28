@@ -17,6 +17,7 @@ type QuizItem struct {
 	RightOperand float64
 	Answer float64
 	QuizId int
+	Operator Op
 
 }
 type Quiz struct {
