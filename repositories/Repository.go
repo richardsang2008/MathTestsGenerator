@@ -114,3 +114,7 @@ func (r *Repository) ScoreAQuiz(id int) float64 {
 	}
 	return quiz.Score
 }
+func (r *Repository) AddStudent(student compositemodels.Student)  int {
+	id:=r.DataAccessObj.AddStudent(student.FirstName,student.LastName,student.MidName,student.StudentId,student.Email)
+	return id
+}

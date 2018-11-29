@@ -5,10 +5,21 @@ import (
 	"github.com/richardsang2008/MathTestsGenerator/controllers"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/spf13/viper"
+	"github.com/fsnotify/fsnotify"
+	"fmt"
 )
 
 func main() {
 	//db,err:=gorm.Open()
+	//appconfig loading
+	viper.SetConfigName("appconfig")
+	viper.AddConfigPath("config")
+	viper.ReadInConfig()
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("Config file changed:",e.Name)
+	})
 
 	// Set Gin to production mode
 	//gin.SetMode(gin.ReleaseMode)

@@ -1,6 +1,9 @@
 package datalayer
 
-import "github.com/richardsang2008/MathTestsGenerator/models/dbmodels"
+import (
+	"github.com/richardsang2008/MathTestsGenerator/models/dbmodels"
+	"github.com/richardsang2008/MathTestsGenerator/models/compositemodels"
+)
 
 type IDataAccess interface {
 	GetStudents() []dbmodels.Student
@@ -16,4 +19,5 @@ type IDataAccess interface {
 	GetQuizes() []dbmodels.Quiz
 	GetQuiz(id int) dbmodels.Quiz
 	AddQuiz(studentId string, score float64) int
+	CreateQuizItems(quizItems []compositemodels.QuizItem)
 }

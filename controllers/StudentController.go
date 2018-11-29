@@ -10,9 +10,12 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"github.com/richardsang2008/MathTestsGenerator/repositories"
+	"github.com/richardsang2008/MathTestsGenerator/models/compositemodels"
 )
 
 type StudentController struct {
+	Repository repositories.Repository
 }
 func generateRandomString(length int) string {
 	characters:="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -37,7 +40,11 @@ func (r *StudentController) CreateStudent(c *gin.Context) {
 	if isValid == false {
 		c.JSON(http.StatusBadRequest, gin.H{"Error": "new student validation failed %s "})
 	}
-	c.JSON(200, gin.H{"id": 1})
+	studentId:= generateRandomString(12)
+	student:= compositemodels.Student{FirstName:newstudent.FName,MidName:newstudent.MName,LastName:newstudent.LName,Email:newstudent.Email,StudentId:studentId}
+	r.Repository.AddStudent(student)
+	retStudent:= response.StudentInfo{FName:student.FirstName,MName:student.MidName,LName:student.LastName,Email:student.Email,StudentId:student.StudentId}
+	c.JSON(200, retStudent)
 }
 
 func (r *StudentController) GetStudentByStudentId(c *gin.Context) {

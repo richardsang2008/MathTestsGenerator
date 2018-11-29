@@ -11,6 +11,7 @@ type DataAccess struct {
 	db gorm.DB
 }
 
+
 func (r *DataAccess) GetStudents() []dbmodels.Student {
 	var students []dbmodels.Student
 	r.db.Find(&students)

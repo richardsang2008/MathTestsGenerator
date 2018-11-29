@@ -14,7 +14,7 @@ type Routes struct {
 
 }
 
-func NewLogger() (*zap.Logger, error) {
+func newLogger() (*zap.Logger, error) {
 	cfg := zap.NewProductionConfig()
 	logdir :="logs"
 	logfile:="math.log"
@@ -31,7 +31,7 @@ func NewLogger() (*zap.Logger, error) {
 func (r *Routes) InitializeRoutes() *gin.Engine {
 	router := gin.New()
 	//Logging to a file
-	zlog, _ := NewLogger()
+	zlog, _ := newLogger()
 	defer zlog.Sync()
 	//Add middleware to Gin, requires sync duration & zap pointer
 	router.Use(ginzap.Logger(3*time.Second, zlog))
@@ -43,15 +43,16 @@ func (r *Routes) InitializeRoutes() *gin.Engine {
 
 	zlog.Info("Start the router")
 	router.GET("/ping", pinController.Pinhandler)
+	router.POST("/api/Student",studentController.CreateStudent)
 	api := router.Group("/api")
 	{
 		studentapi := api.Group("/Student")
 		{
-			studentapi.POST("", studentController.CreateStudent)
+			//studentapi.POST("", studentController.CreateStudent)
 			studentapi.GET("/byStudentId", studentController.GetStudentByStudentId)
 			studentapi.GET("/byEmail", studentController.GetStudentByEmail)
 		}
-		quizapi := api.Group("/api/Quiz")
+		quizapi := api.Group("/Quiz")
 		{
 			quizapi.GET("/:id", quizController.GetQuizById)
 			quizapi.GET("/:id/score", quizController.GetQuizScoreById)
