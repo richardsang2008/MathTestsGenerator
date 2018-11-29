@@ -6,11 +6,24 @@ import (
 	"github.com/richardsang2008/MathTestsGenerator/models/requests"
 	"github.com/richardsang2008/MathTestsGenerator/models/response"
 	"log"
+	"math/rand"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type StudentController struct {
+}
+func generateRandomString(length int) string {
+	characters:="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	var sb strings.Builder
+	size := len(characters)
+	for i:=0;i<size;i++ {
+		index:= rand.Intn(size)
+		a:=characters[index]
+		sb.WriteString(string(a))
+	}
+	return sb.String()
 }
 
 func (r *StudentController) CreateStudent(c *gin.Context) {
@@ -24,9 +37,7 @@ func (r *StudentController) CreateStudent(c *gin.Context) {
 	if isValid == false {
 		c.JSON(http.StatusBadRequest, gin.H{"Error": "new student validation failed %s "})
 	}
-
 	c.JSON(200, gin.H{"id": 1})
-
 }
 
 func (r *StudentController) GetStudentByStudentId(c *gin.Context) {

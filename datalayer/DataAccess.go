@@ -4,7 +4,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/richardsang2008/MathTestsGenerator/models/compositemodels"
 	"github.com/richardsang2008/MathTestsGenerator/models/dbmodels"
-	"math/rand"
 	"time"
 )
 
@@ -50,6 +49,11 @@ func (r *DataAccess) GetQuizItem(id int) dbmodels.QuizItem {
 	r.db.Where("Id = ?", id).First(&quizItem)
 	return quizItem
 }
+func (r *DataAccess) GetQuizItemsByQuizId(quizId int) []dbmodels.QuizItem {
+	quizItems := []dbmodels.QuizItem{}
+	r.db.Where("QuizId = ?", quizId).Find(&quizItems)
+	return quizItems
+}
 func (r *DataAccess) AddQuizItem(leftOperand float64, rightOperand float64, operator compositemodels.Op, answer float64, quizId int) int {
 	operatorInt := 0
 	if operator == compositemodels.OpADDITION {
@@ -90,54 +94,4 @@ func (r *DataAccess) CreateQuizItems(quizItems []compositemodels.QuizItem) {
 	for _, item := range quizItems {
 		r.AddQuizItem(item.LeftOperand, item.RightOperand, item.Operator, item.Answer, item.QuizId)
 	}
-}
-func CreateQuizItem(operator compositemodels.Op, quizId int) compositemodels.QuizItem {
-	num1 := rand.Intn(10000)
-	num2 := rand.Intn(10000)
-	var qi compositemodels.QuizItem
-	if operator == compositemodels.OpRANDOM {
-		randop := rand.Intn(4)
-		if randop > 0 {
-			if randop == 1 {
-				operator = compositemodels.OpADDITION
-			} else if randop == 2 {
-				operator = compositemodels.OpSUBTRACTION
-			} else if randop == 3 {
-				operator = compositemodels.OpMULTIPLICATION
-			} else {
-				operator = compositemodels.OpDIVISION
-			}
-		}
-	}
-	if num1 < num2 {
-		if num1 == 0 {
-			num1 = num1 + 1
-		}
-		qi = compositemodels.QuizItem{Answer: 0, LeftOperand: float64(num2), RightOperand: float64(num1), QuizId: quizId, Operator: operator}
-	} else {
-		if num2 == 0 {
-			num2 = num2 + 1
-		}
-		qi = compositemodels.QuizItem{Answer: 0, LeftOperand: float64(num1), RightOperand: float64(num2), QuizId: quizId, Operator: operator}
-	}
-	return qi
-}
-func (r *DataAccess) GenerateAQuiz(operator compositemodels.Op, studentId string) compositemodels.Quiz {
-	studentdb := r.GetStudentByStudentId(studentId)
-	student := compositemodels.Student{FirstName: studentdb.FirstName, MidName: studentdb.MidName, LastName: studentdb.LastName}
-
-	retQuiz := compositemodels.Quiz{Id: 0, QuizDate: time.Now(), Score: 0, Student: student, QuizItems: []compositemodels.QuizItem{}}
-	quizId := r.AddQuiz(student.StudentId, 0)
-	quizItems := []compositemodels.QuizItem{}
-
-	for i := 0; i < 10; i++ {
-		quizItems = append(quizItems, CreateQuizItem(operator, quizId))
-	}
-	r.CreateQuizItems(quizItems)
-	//map quiz
-	retQuiz.Id = quizId
-	retQuiz.QuizDate = time.Now()
-	retQuiz.Student = student
-	retQuiz.QuizItems = quizItems
-	return retQuiz
 }

@@ -7,12 +7,13 @@ type IDataAccess interface {
 	GetStudentByStudentId(studentId string) dbmodels.Student
 	GetStudent(id int) dbmodels.Student
 	GetStudentByEmail(email string) dbmodels.Student
-	AddStudent(firstname string, lastname string, midname string, studentId string, email string ) int
+	AddStudent(firstname string, lastname string, midname string, studentId string, email string) int
 	GetQuizItems() []dbmodels.QuizItem
 	GetQuizItem(id int) dbmodels.QuizItem
+	GetQuizItemsByQuizId(quizId int) []dbmodels.QuizItem
 	AddQuizItem(leftOperand float64, rightOperand float64, operator int, answer float64, quizId int) int
 	UpdateQuizItemAnswer(id int, answer float64)
 	GetQuizes() []dbmodels.Quiz
 	GetQuiz(id int) dbmodels.Quiz
-	AddQuiz (studentId string, score float64) int
+	AddQuiz(studentId string, score float64) int
 }
