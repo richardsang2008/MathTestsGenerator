@@ -104,8 +104,11 @@ func (r *DataAccess) AddQuiz(studentId string, score float64) int {
 	r._db.NewRecord(quiz)
 	return quiz.Id
 }
-func (r *DataAccess) CreateQuizItems(quizItems []compositemodels.QuizItem) {
+func (r *DataAccess) CreateQuizItems(quizItems []compositemodels.QuizItem) []compositemodels.QuizItem{
+	retQuizItem:=[]compositemodels.QuizItem{}
 	for _, item := range quizItems {
-		r.AddQuizItem(item.LeftOperand, item.RightOperand, item.Operator, item.Answer, item.QuizId)
+		id:=r.AddQuizItem(item.LeftOperand, item.RightOperand, item.Operator, item.Answer, item.QuizId)
+		retQuizItem= append(retQuizItem, compositemodels.QuizItem{Id:id,LeftOperand:item.LeftOperand,RightOperand:item.RightOperand,Operator:item.Operator,Answer:item.Answer,QuizId:item.QuizId})
 	}
+	return retQuizItem
 }

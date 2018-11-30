@@ -69,13 +69,13 @@ func (r *Repository) GenerateAQuiz(operator compositemodels.Op, studentId string
 			for i := 0; i < 10; i++ {
 				quizItems = append(quizItems, createQuizItem(operator, quizId))
 			}
-			r.DataAccessObj.CreateQuizItems(quizItems)
+			items:=r.DataAccessObj.CreateQuizItems(quizItems)
 			//map quiz
 			retQuiz.Id = quizId
 			retQuiz.QuizDate = time.Now()
-			for _, item:=range quizItems {
+			for _, item:=range items {
 				retQuiz.QuizItems = append(retQuiz.QuizItems,response.QuizItem{Id:item.Id,LeftOperand:item.LeftOperand,RightOperand:item.RightOperand,
-				Answer:item.Answer,Operator:item.Operator})
+				Answer:item.Answer,Operator:item.Operator,QuizId:item.QuizId})
 			}
 			return retQuiz
 		} else {

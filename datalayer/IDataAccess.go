@@ -21,6 +21,6 @@ type IDataAccess interface {
 	GetQuizes() []dbmodels.Quiz
 	GetQuiz(id int) dbmodels.Quiz
 	AddQuiz(studentId string, score float64) int
-	CreateQuizItems(quizItems []compositemodels.QuizItem)
 	GetQuizByStudentIdAndSomeScore(studentId string, score float64) []dbmodels.Quiz
+	CreateQuizItems(quizItems []compositemodels.QuizItem) []compositemodels.QuizItem
 }

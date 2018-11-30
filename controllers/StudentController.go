@@ -25,7 +25,7 @@ func generateRandomString(length int) string {
 	characters:="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	var sb strings.Builder
 	size := len(characters)
-	for i:=0;i<size;i++ {
+	for i:=0;i<length;i++ {
 		index:= rand.Intn(size)
 		a:=characters[index]
 		sb.WriteString(string(a))

@@ -15,4 +15,5 @@ type IRepository interface {
 	AddStudent(student compositemodels.Student)  int
 	GetStudentByStudentId(studentId string) response.StudentInfo
 	GetStudentByEmail(email string) response.StudentInfo
+
 }
