@@ -6,10 +6,8 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/richardsang2008/MathTestsGenerator/models/requests"
 	"github.com/richardsang2008/MathTestsGenerator/models/response"
-	"log"
 	"math/rand"
 	"net/http"
-	"strconv"
 	"strings"
 	"github.com/richardsang2008/MathTestsGenerator/repositories"
 	"github.com/richardsang2008/MathTestsGenerator/models/compositemodels"
@@ -48,21 +46,25 @@ func (r *StudentController) CreateStudent(c *gin.Context) {
 	}
 	studentId:= generateRandomString(12)
 	student:= compositemodels.Student{FirstName:newstudent.FName,MidName:newstudent.MName,LastName:newstudent.LName,Email:newstudent.Email,StudentId:studentId}
-	r.Repository.AddStudent(student)
-	retStudent:= response.StudentInfo{FName:student.FirstName,MName:student.MidName,LName:student.LastName,Email:student.Email,StudentId:student.StudentId}
-	c.JSON(200, retStudent)
+	sid:=r.Repository.AddStudent(student)
+	if sid >0{
+		retStudent:= response.StudentInfo{FName:student.FirstName,MName:student.MidName,LName:student.LastName,
+			Email:student.Email,StudentId:student.StudentId,Id:sid, EnrollmentDate:student.EnrollmentDate}
+		c.JSON(http.StatusOK, retStudent)
+	} else{
+		c.JSON(http.StatusNotFound,gin.H{"message":"Email is used"})
+	}
 }
 
 func (r *StudentController) GetStudentByStudentId(c *gin.Context) {
-	studnetId := c.DefaultQuery("studnetId", "NULL")
-	if studnetId != "NULL" && studnetId != "\"\"" {
-		id, err := strconv.Atoi(studnetId)
-		if err != nil {
-			log.Println("studnetId must be a number")
-			c.JSON(http.StatusBadRequest, gin.H{"Error": "studnetId must be a number"})
+	studentId := c.DefaultQuery("studnetId", "NULL")
+	if studentId != "NULL" && studentId != "\"\"" {
+		student:=r.Repository.GetStudentByStudentId(studentId)
+		if student.Email=="" {
+			c.JSON(http.StatusNotFound,student)
+		} else {
+			c.JSON(http.StatusOK, student)
 		}
-		student := response.Student{"Joy", id}
-		c.JSON(200, student)
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"Error": "studnetId is empty"})
 	}
@@ -72,8 +74,12 @@ func (r *StudentController) GetStudentByStudentId(c *gin.Context) {
 func (r *StudentController) GetStudentByEmail(c *gin.Context) {
 	email := c.DefaultQuery("email", "NULL")
 	if email != "NULL" && email != "\"\"" {
-		studentemail := response.StudentEmail{"Joy", email}
-		c.JSON(200, studentemail)
+		student:=r.Repository.GetStudentByEmail(email)
+		if student.Email=="" {
+			c.JSON(http.StatusNotFound,student)
+		} else {
+			c.JSON(http.StatusOK, student)
+		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"Error": "email is empty"})
 	}

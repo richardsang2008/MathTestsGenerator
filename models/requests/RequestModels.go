@@ -9,10 +9,7 @@ type StudentInfo struct {
 	Email string `json:"email"`
 }
 
-type QuizItemScore struct {
-	QuizItemId int     `json:"quizItemId"`
-	Answer     float32 `json:"answer""`
-}
+
 
 func (r *StudentInfo) IsValid() (bool, error) {
 	if r.FName == "" || len(r.FName) == 0 {
@@ -25,4 +22,9 @@ func (r *StudentInfo) IsValid() (bool, error) {
 		return false, fmt.Errorf("Email is missing")
 	}
 	return true, nil
+}
+
+type QuizItemScore struct {
+	QuizItemId int     `json:"quizItemId"`
+	Answer     float32 `json:"answer""`
 }

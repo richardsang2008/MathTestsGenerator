@@ -33,6 +33,7 @@ func main() {
 	//open database
 	dbconnection:= fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",username,password,dbhost,database)
 	db,err:=gorm.Open("mysql",dbconnection)
+	db.LogMode(true)
 	if err != nil {
 		fmt.Errorf("database connection error %s",err)
 	}
@@ -41,5 +42,6 @@ func main() {
 	a := controllers.Routes{}
 	routes:=a.NewRoutes(db)
 	router := routes.InitializeRoutes()
+	fmt.Println(fmt.Sprintf("Server is starting at http://localhost:%s",hostport))
 	router.Run(fmt.Sprintf(":%s",hostport)) // listen and serve on 0.0.0.0:8080
 }

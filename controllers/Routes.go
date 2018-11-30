@@ -5,6 +5,7 @@ import (
 	"github.com/akath19/gin-zap"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/wantedly/gorm-zap"
 	"go.uber.org/zap"
 	"os"
 
@@ -48,10 +49,13 @@ func (r *Routes) InitializeRoutes() *gin.Engine {
 	router.Use(gin.Recovery())
 	a := StudentController{}
 	studentController:=a.NewStudentController(r.Db)
-	quizController := QuizController{}
+	b := QuizController{}
+	quizController := b.NewQuizController(r.Db)
+
 	pinController := PinController{}
 
 	zlog.Info("Start the router")
+	r.Db.SetLogger(gormzap.New(zlog))
 	router.GET("/api/ping", pinController.Pinhandler)
 	router.POST("/api/Student",studentController.CreateStudent)
 	api := router.Group("/api")
@@ -64,7 +68,7 @@ func (r *Routes) InitializeRoutes() *gin.Engine {
 		}
 		quizapi := api.Group("/Quiz")
 		{
-			quizapi.GET("/:id", quizController.GetQuizById)
+			quizapi.GET("/:id", quizController.GetAQuizById)
 			quizapi.GET("/:id/score", quizController.GetQuizScoreById)
 			quizapi.PATCH("/quizitems", quizController.PatchQuizItems)
 		}

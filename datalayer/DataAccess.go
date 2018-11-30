@@ -39,9 +39,11 @@ func (r *DataAccess) GetStudentByEmail(email string) dbmodels.Student {
 	r._db.Where("Email = ?", email).First(&student)
 	return student
 }
+
 func (r *DataAccess) AddStudent(firstname string, lastname string, midname string, studentId string, email string) int {
 	student := dbmodels.Student{FirstName: firstname, LastName: lastname, MidName: midname, StudentId: studentId, Email: email, EnrollmentDate: time.Now()}
 	r._db.Create(&student)
+	r._db.NewRecord(student)
 	return student.Id
 }
 func (r *DataAccess) GetQuizItems() []dbmodels.QuizItem {
@@ -72,6 +74,7 @@ func (r *DataAccess) AddQuizItem(leftOperand float64, rightOperand float64, oper
 	}
 	quizItem := dbmodels.QuizItem{LeftOperand: leftOperand, RightOperand: rightOperand, Operator: operatorInt, Answer: answer, QuizId: quizId}
 	r._db.Create(&quizItem)
+	r._db.NewRecord(quizItem)
 	return quizItem.Id
 }
 
@@ -93,6 +96,7 @@ func (r *DataAccess) GetQuiz(id int) dbmodels.Quiz {
 func (r *DataAccess) AddQuiz(studentId string, score float64) int {
 	quiz := dbmodels.Quiz{StudentId: studentId, Score: score, QuizDate: time.Now()}
 	r._db.Create(&quiz)
+	r._db.NewRecord(quiz)
 	return quiz.Id
 }
 func (r *DataAccess) CreateQuizItems(quizItems []compositemodels.QuizItem) {

@@ -8,6 +8,7 @@ import (
 	"math"
 	"math/rand"
 	"time"
+	"github.com/richardsang2008/MathTestsGenerator/models/response"
 )
 
 type Repository struct {
@@ -120,7 +121,61 @@ func (r *Repository) ScoreAQuiz(id int) float64 {
 	}
 	return quiz.Score
 }
+
+func (r *Repository) GetAQuiz(id int) response.Quiz{
+	quiz:=r.DataAccessObj.GetQuiz(id)
+	if quiz.StudentId!="" {
+		student:=r.GetStudentByStudentId(quiz.StudentId)
+		retQuiz:=response.Quiz{Id:quiz.Id,QuizDate:quiz.QuizDate,Score:quiz.Score,Student:student,QuizItems:[]response.QuizItem{}}
+		quizItems:=r.DataAccessObj.GetQuizItemsByQuizId(id)
+		if len(quizItems) >0 {
+			for _,item:=range quizItems {
+				opp :=  compositemodels.OpDIVISION
+				if item.Operator ==1 {
+					opp = compositemodels.OpADDITION
+				} else if item.Operator ==2 {
+					opp = compositemodels.OpSUBTRACTION
+				} else if item.Operator ==3 {
+					opp = compositemodels.OpMULTIPLICATION
+				} else {
+					opp = compositemodels.OpDIVISION
+				}
+				retQuiz.QuizItems=append(retQuiz.QuizItems,response.QuizItem{Id:item.Id,LeftOperand:item.LeftOperand,RightOperand:item.RightOperand,Answer:item.Answer,
+				QuizId:item.QuizId,Operator:opp})
+			}
+
+		}
+		return retQuiz
+	}
+	return response.Quiz{}
+}
+
 func (r *Repository) AddStudent(student compositemodels.Student)  int {
-	id:=r.DataAccessObj.AddStudent(student.FirstName,student.LastName,student.MidName,student.StudentId,student.Email)
-	return id
+	//check if email is there
+	stu:=r.DataAccessObj.GetStudentByEmail(student.Email)
+	if stu.Email !="" {
+		return -1
+	} else {
+		id:=r.DataAccessObj.AddStudent(student.FirstName,student.LastName,student.MidName,student.StudentId,student.Email)
+		return id
+	}
+
+}
+func (r *Repository) GetStudentByStudentId(studentId string) response.StudentInfo {
+	student:=r.DataAccessObj.GetStudentByStudentId(studentId)
+	if student.StudentId !="" {
+		retstudent:=response.StudentInfo{StudentId:student.StudentId,FName:student.FirstName,MName:student.MidName,
+		LName:student.LastName,Email:student.Email,Id:student.Id, EnrollmentDate:student.EnrollmentDate}
+		return retstudent
+	}
+	return response.StudentInfo{}
+}
+func (r *Repository) GetStudentByEmail(email string) response.StudentInfo {
+	student:=r.DataAccessObj.GetStudentByEmail(email)
+	if student.StudentId !="" {
+		retstudent:=response.StudentInfo{StudentId:student.StudentId,FName:student.FirstName,MName:student.MidName,
+			LName:student.LastName,Email:student.Email,Id:student.Id, EnrollmentDate:student.EnrollmentDate}
+		return retstudent
+	}
+	return response.StudentInfo{}
 }
