@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"github.com/richardsang2008/MathTestsGenerator/models/requests"
 	"github.com/richardsang2008/MathTestsGenerator/models/response"
 	"log"
@@ -15,7 +16,12 @@ import (
 )
 
 type StudentController struct {
-	Repository repositories.Repository
+	Repository *repositories.Repository
+}
+func (r *StudentController) NewStudentController(l *gorm.DB) *StudentController {
+	a:=repositories.Repository{}
+	r.Repository = a.NewRepository(l)
+	return r
 }
 func generateRandomString(length int) string {
 	characters:="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"

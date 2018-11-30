@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/jinzhu/gorm"
 	"github.com/richardsang2008/MathTestsGenerator/datalayer"
 	"github.com/richardsang2008/MathTestsGenerator/models/compositemodels"
 	"github.com/richardsang2008/MathTestsGenerator/models/dbmodels"
@@ -10,9 +11,14 @@ import (
 )
 
 type Repository struct {
-	DataAccessObj datalayer.DataAccess
+	DataAccessObj *datalayer.DataAccess
 }
-
+func (r *Repository) NewRepository(l *gorm.DB) *Repository {
+	m := Repository{}
+	d:=datalayer.DataAccess{}
+	m.DataAccessObj = d.NewDataAccess( l)
+	return &m
+}
 func createQuizItem(operator compositemodels.Op, quizId int) compositemodels.QuizItem {
 	num1 := rand.Intn(10000)
 	num2 := rand.Intn(10000)

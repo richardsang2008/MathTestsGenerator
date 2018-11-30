@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/akath19/gin-zap"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 	"os"
 
@@ -11,9 +12,12 @@ import (
 )
 
 type Routes struct {
-
+	Db *gorm.DB
 }
-
+func (r *Routes) NewRoutes(l *gorm.DB) *Routes {
+	r.Db =l
+	return r
+}
 func newLogger() (*zap.Logger, error) {
 	cfg := zap.NewProductionConfig()
 	logdir :="logs"
@@ -28,8 +32,13 @@ func newLogger() (*zap.Logger, error) {
 	}
 	return cfg.Build()
 }
+
+
 func (r *Routes) InitializeRoutes() *gin.Engine {
 	router := gin.New()
+	//use ginSwagger middleware
+	//router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.Static("/swaggerui/", "cmd/api/swaggerui")
 	//Logging to a file
 	zlog, _ := newLogger()
 	defer zlog.Sync()
@@ -37,12 +46,13 @@ func (r *Routes) InitializeRoutes() *gin.Engine {
 	router.Use(ginzap.Logger(3*time.Second, zlog))
 
 	router.Use(gin.Recovery())
-	studentController := StudentController{}
+	a := StudentController{}
+	studentController:=a.NewStudentController(r.Db)
 	quizController := QuizController{}
 	pinController := PinController{}
 
 	zlog.Info("Start the router")
-	router.GET("/ping", pinController.Pinhandler)
+	router.GET("/api/ping", pinController.Pinhandler)
 	router.POST("/api/Student",studentController.CreateStudent)
 	api := router.Group("/api")
 	{

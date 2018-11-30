@@ -1,11 +1,13 @@
 package datalayer
 
 import (
+	"github.com/jinzhu/gorm"
 	"github.com/richardsang2008/MathTestsGenerator/models/dbmodels"
 	"github.com/richardsang2008/MathTestsGenerator/models/compositemodels"
 )
 
 type IDataAccess interface {
+	NewDataAccess( db *gorm.DB) *DataAccess
 	GetStudents() []dbmodels.Student
 	GetStudentByStudentId(studentId string) dbmodels.Student
 	GetStudent(id int) dbmodels.Student
