@@ -61,6 +61,12 @@ func (r *DataAccess) GetQuizItemsByQuizId(quizId int) []dbmodels.QuizItem {
 	r._db.Where("QuizId = ?", quizId).Find(&quizItems)
 	return quizItems
 }
+func (r *DataAccess) GetQuizByStudentIdAndSomeScore(studentId string, score float64) []dbmodels.Quiz {
+	quizes:=[]dbmodels.Quiz{}
+	r._db.Where("Score < ? && StudentId = ?",score,studentId).Find(&quizes)
+	return quizes
+}
+
 func (r *DataAccess) AddQuizItem(leftOperand float64, rightOperand float64, operator compositemodels.Op, answer float64, quizId int) int {
 	operatorInt := 0
 	if operator == compositemodels.OpADDITION {
@@ -80,8 +86,7 @@ func (r *DataAccess) AddQuizItem(leftOperand float64, rightOperand float64, oper
 
 func (r *DataAccess) UpdateQuizItemAnswer(id int, answer float64) {
 	quizItem := dbmodels.QuizItem{}
-	r._db.Where("Id = ?", id).First(&quizItem)
-	r._db.Model(&quizItem).UpdateColumn("Answer", answer)
+	r._db.Where("Id = ?", id).First(&quizItem).UpdateColumn("Answer", answer)
 }
 func (r *DataAccess) GetQuizes() []dbmodels.Quiz {
 	var quizes []dbmodels.Quiz

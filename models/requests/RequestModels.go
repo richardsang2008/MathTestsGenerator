@@ -26,5 +26,21 @@ func (r *StudentInfo) IsValid() (bool, error) {
 
 type QuizItemScore struct {
 	QuizItemId int     `json:"quizItemId"`
-	Answer     float32 `json:"answer""`
+	Answer     float64 `json:"answer""`
+}
+func (r*QuizItemScore) IsValid() (bool,error) {
+
+	if r.QuizItemId <1 {
+		return false, fmt.Errorf("QuizItemId can not be empty")
+	}
+	return true, nil
+}
+type CreateQuiz struct{
+	StudentId string `json:StudentId`
+}
+func(r *CreateQuiz) IsValid() (bool,error) {
+	if len(r.StudentId) ==0 {
+		return false, fmt.Errorf("StudentId can not be empty")
+	}
+	return true, nil
 }

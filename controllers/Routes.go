@@ -66,11 +66,13 @@ func (r *Routes) InitializeRoutes() *gin.Engine {
 			studentapi.GET("/byStudentId", studentController.GetStudentByStudentId)
 			studentapi.GET("/byEmail", studentController.GetStudentByEmail)
 		}
+		api.POST("/Quiz",quizController.CreateAQuiz)
 		quizapi := api.Group("/Quiz")
 		{
 			quizapi.GET("/:id", quizController.GetAQuizById)
-			quizapi.GET("/:id/score", quizController.GetQuizScoreById)
-			quizapi.PATCH("/quizitems", quizController.PatchQuizItems)
+			quizapi.GET("/:id/score", quizController.ScoreTheQuiz)
+			quizapi.PATCH("/quizitems", quizController.AnswerAQuizItem)
+
 		}
 	}
 	return router

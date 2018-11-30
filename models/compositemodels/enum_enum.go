@@ -9,7 +9,7 @@ import (
 
 const (
 	// OpADDITION is a Op of type ADDITION
-	OpADDITION Op = iota
+	OpADDITION Op = iota +1
 	// OpSUBTRACTION is a Op of type SUBTRACTION
 	OpSUBTRACTION
 	// OpMULTIPLICATION is a Op of type MULTIPLICATION

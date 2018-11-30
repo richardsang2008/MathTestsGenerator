@@ -5,10 +5,10 @@ import (
 	"github.com/richardsang2008/MathTestsGenerator/datalayer"
 	"github.com/richardsang2008/MathTestsGenerator/models/compositemodels"
 	"github.com/richardsang2008/MathTestsGenerator/models/dbmodels"
+	"github.com/richardsang2008/MathTestsGenerator/models/response"
 	"math"
 	"math/rand"
 	"time"
-	"github.com/richardsang2008/MathTestsGenerator/models/response"
 )
 
 type Repository struct {
@@ -51,24 +51,44 @@ func createQuizItem(operator compositemodels.Op, quizId int) compositemodels.Qui
 	}
 	return qi
 }
-func (r *Repository) GenerateAQuiz(operator compositemodels.Op, studentId string) compositemodels.Quiz {
+func (r *Repository) GenerateAQuiz(operator compositemodels.Op, studentId string) response.Quiz {
+	//verify student exist
 	studentdb := r.DataAccessObj.GetStudentByStudentId(studentId)
-	student := compositemodels.Student{FirstName: studentdb.FirstName, MidName: studentdb.MidName, LastName: studentdb.LastName}
-
-	retQuiz := compositemodels.Quiz{Id: 0, QuizDate: time.Now(), Score: 0, Student: student, QuizItems: []compositemodels.QuizItem{}}
-	quizId := r.DataAccessObj.AddQuiz(student.StudentId, 0)
-	quizItems := []compositemodels.QuizItem{}
-
-	for i := 0; i < 10; i++ {
-		quizItems = append(quizItems, createQuizItem(operator, quizId))
+	if len(studentdb.StudentId) >0 {
+		//look for any quiz that is below the score 60
+		quiz:=r.DataAccessObj.GetQuizByStudentIdAndSomeScore(studentId,60)
+		if len(quiz) ==0 {
+			//create a quiz
+			student := compositemodels.Student{FirstName: studentdb.FirstName, MidName: studentdb.MidName, Email:studentdb.Email,
+				LastName: studentdb.LastName,Id:studentdb.Id,EnrollmentDate:studentdb.EnrollmentDate,StudentId:studentdb.StudentId}
+			retQuiz := response.Quiz{Id: 0, QuizDate: time.Now(), Score: 0, Student: response.StudentInfo{
+				Id:student.Id,LName:student.LastName,MName:student.MidName,FName:student.FirstName,Email:student.Email,EnrollmentDate:student.EnrollmentDate,
+				StudentId:student.StudentId}, QuizItems: []response.QuizItem{}}
+			quizId := r.DataAccessObj.AddQuiz(student.StudentId, 0)
+			quizItems := []compositemodels.QuizItem{}
+			for i := 0; i < 10; i++ {
+				quizItems = append(quizItems, createQuizItem(operator, quizId))
+			}
+			r.DataAccessObj.CreateQuizItems(quizItems)
+			//map quiz
+			retQuiz.Id = quizId
+			retQuiz.QuizDate = time.Now()
+			for _, item:=range quizItems {
+				retQuiz.QuizItems = append(retQuiz.QuizItems,response.QuizItem{Id:item.Id,LeftOperand:item.LeftOperand,RightOperand:item.RightOperand,
+				Answer:item.Answer,Operator:item.Operator})
+			}
+			return retQuiz
+		} else {
+			//get first unfinish quiz
+			return r.GetAQuiz(quiz[0].Id)
+		}
+	} else {
+		//no student find
+		return response.Quiz{}
 	}
-	r.DataAccessObj.CreateQuizItems(quizItems)
-	//map quiz
-	retQuiz.Id = quizId
-	retQuiz.QuizDate = time.Now()
-	retQuiz.Student = student
-	retQuiz.QuizItems = quizItems
-	return retQuiz
+
+
+
 }
 func turnIntOpToOperator(operator int) compositemodels.Op {
 	if operator == 1 {
@@ -121,7 +141,10 @@ func (r *Repository) ScoreAQuiz(id int) float64 {
 	}
 	return quiz.Score
 }
+func (r *Repository) UpdateQuizItemAnswer(id int, answer float64) {
+	r.DataAccessObj.UpdateQuizItemAnswer(id,answer)
 
+}
 func (r *Repository) GetAQuiz(id int) response.Quiz{
 	quiz:=r.DataAccessObj.GetQuiz(id)
 	if quiz.StudentId!="" {

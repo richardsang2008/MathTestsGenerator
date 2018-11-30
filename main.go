@@ -26,14 +26,22 @@ func main() {
 	database:=viper.Get("database.database")
 	dbhost:=viper.Get("database.host")
 	hostport:=viper.Get("server.port")
-	fmt.Print(username)
-	// Set Gin to production mode
-	//gin.SetMode(gin.ReleaseMode)
-	gin.SetMode(gin.DebugMode)
+	release:=viper.Get("Release")
+	if release =="DEBUG"{
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	//open database
 	dbconnection:= fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",username,password,dbhost,database)
 	db,err:=gorm.Open("mysql",dbconnection)
-	db.LogMode(true)
+	if release == "DEBUG" {
+		db.LogMode(true)
+	} else {
+		db.LogMode(false)
+	}
+
 	if err != nil {
 		fmt.Errorf("database connection error %s",err)
 	}
@@ -43,5 +51,5 @@ func main() {
 	routes:=a.NewRoutes(db)
 	router := routes.InitializeRoutes()
 	fmt.Println(fmt.Sprintf("Server is starting at http://localhost:%s",hostport))
-	router.Run(fmt.Sprintf(":%s",hostport)) // listen and serve on 0.0.0.0:8080
+	router.Run(fmt.Sprintf(":%s",hostport))
 }
