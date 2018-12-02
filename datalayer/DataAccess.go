@@ -13,6 +13,17 @@ type DataAccess struct {
 }
 func (r *DataAccess) NewDataAccess( db *gorm.DB) *DataAccess {
 		r._db=db
+		r._db.AutoMigrate(&dbmodels.Student{},&dbmodels.Quiz{},&dbmodels.QuizItem{})
+		//if db has no table create them
+		if !r._db.HasTable(&dbmodels.Student{}) {
+			r._db.CreateTable(&dbmodels.Student{})
+		}
+		if !r._db.HasTable(&dbmodels.Quiz{}) {
+			r._db.CreateTable(&dbmodels.Quiz{})
+		}
+		if !r._db.HasTable(&dbmodels.QuizItem{}) {
+			r._db.CreateTable(&dbmodels.QuizItem{})
+		}
 		return r
 }
 
