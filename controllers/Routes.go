@@ -48,9 +48,9 @@ func (r *Routes) InitializeRoutes() *gin.Engine {
 
 	router.Use(gin.Recovery())
 	a := StudentController{}
-	studentController:=a.NewStudentController(r.Db)
+	studentController:=a.NewStudentController(r.Db,zlog)
 	b := QuizController{}
-	quizController := b.NewQuizController(r.Db)
+	quizController := b.NewQuizController(r.Db,zlog)
 
 	pinController := PinController{}
 

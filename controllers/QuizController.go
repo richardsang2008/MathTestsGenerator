@@ -10,15 +10,20 @@ import (
 	"github.com/richardsang2008/MathTestsGenerator/repositories"
 	"net/http"
 	"strconv"
+	"go.uber.org/zap"
+	"github.com/gin-gonic/gin/json"
+	"fmt"
 )
 
 type QuizController struct {
 	Repository *repositories.Repository
+	log *zap.Logger
 }
 
-func (r *QuizController) NewQuizController(l *gorm.DB) *QuizController {
+func (r *QuizController) NewQuizController(l *gorm.DB, log *zap.Logger) *QuizController {
 	a := repositories.Repository{}
 	r.Repository = a.NewRepository(l)
+	r.log = log
 	return r
 }
 func (r *QuizController) GetAQuizById(c *gin.Context) {
@@ -65,6 +70,13 @@ func (r *QuizController) CreateAQuiz(c *gin.Context) {
 	var createQuizReq requests.CreateQuiz
 	c.BindJSON(&createQuizReq)
 	isValid, err := createQuizReq.IsValid()
+	bytes, err:= json.Marshal(createQuizReq)
+	if err!= nil  {
+
+	} else {
+		r.log.Info(fmt.Sprintf("CreateAQuiz input is %s", string(bytes)))
+	}
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err})
 	} else {
@@ -72,7 +84,14 @@ func (r *QuizController) CreateAQuiz(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "StudentId is empty"})
 		} else {
 			//create quiz hard code to subtraction
-			c.JSON(http.StatusOK, r.Repository.GenerateAQuiz(compositemodels.OpSUBTRACTION, createQuizReq.StudentId))
+			resp:=r.Repository.GenerateAQuiz(compositemodels.OpSUBTRACTION, createQuizReq.StudentId)
+			c.JSON(http.StatusOK, resp)
+			bytes, err:= json.Marshal(resp)
+			if err!= nil  {
+
+			} else {
+				r.log.Info(fmt.Sprintf("CreateAQuiz out is %s", string(bytes)))
+			}
 		}
 	}
 

@@ -11,14 +11,17 @@ import (
 	"strings"
 	"github.com/richardsang2008/MathTestsGenerator/repositories"
 	"github.com/richardsang2008/MathTestsGenerator/models/compositemodels"
+	"go.uber.org/zap"
 )
 
 type StudentController struct {
 	Repository *repositories.Repository
+	log *zap.Logger
 }
-func (r *StudentController) NewStudentController(l *gorm.DB) *StudentController {
+func (r *StudentController) NewStudentController(l *gorm.DB, log *zap.Logger) *StudentController {
 	a:=repositories.Repository{}
 	r.Repository = a.NewRepository(l)
+	r.log = log
 	return r
 }
 func generateRandomString(length int) string {
