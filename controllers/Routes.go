@@ -7,6 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/wantedly/gorm-zap"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"os"
 
 	"time"
@@ -15,49 +16,50 @@ import (
 type Routes struct {
 	Db *gorm.DB
 }
+
 func (r *Routes) NewRoutes(l *gorm.DB) *Routes {
-	r.Db =l
+	r.Db = l
 	return r
 }
-func newLogger() (*zap.Logger, error) {
+func newLogger(logdir string, logfile string, enableDebug bool) (*zap.Logger, error) {
 	cfg := zap.NewProductionConfig()
-	logdir :="logs"
-	logfile:="math.log"
 	var _, err = os.Stat(logdir)
 	if os.IsNotExist(err) {
-		_ = os.MkdirAll(logdir,0755)
+		_ = os.MkdirAll(logdir, 0755)
 	}
-	logpath:=fmt.Sprintf("%s/%s",logdir,logfile)
+	logpath := fmt.Sprintf("%s/%s", logdir, logfile)
 	cfg.OutputPaths = []string{
 		logpath,
+	}
+	if enableDebug {
+		cfg.Level = zap.NewAtomicLevelAt(zapcore.DebugLevel)
 	}
 	return cfg.Build()
 }
 
-
-func (r *Routes) InitializeRoutes() *gin.Engine {
+func (r *Routes) InitializeRoutes(logdir string, logfile string, enableDebug bool) *gin.Engine {
 	router := gin.New()
 	//use ginSwagger middleware
 	//router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Static("/swaggerui/", "cmd/api/swaggerui")
 	//Logging to a file
-	zlog, _ := newLogger()
+	zlog, _ := newLogger(logdir, logfile, enableDebug)
 	defer zlog.Sync()
 	//Add middleware to Gin, requires sync duration & zap pointer
 	router.Use(ginzap.Logger(3*time.Second, zlog))
 
 	router.Use(gin.Recovery())
 	a := StudentController{}
-	studentController:=a.NewStudentController(r.Db,zlog)
+	studentController := a.NewStudentController(r.Db, zlog)
 	b := QuizController{}
-	quizController := b.NewQuizController(r.Db,zlog)
+	quizController := b.NewQuizController(r.Db, zlog)
 
 	pinController := PinController{}
 
 	zlog.Info("Start the router")
 	r.Db.SetLogger(gormzap.New(zlog))
 	router.GET("/api/ping", pinController.Pinhandler)
-	router.POST("/api/Student",studentController.CreateStudent)
+	router.POST("/api/Student", studentController.CreateStudent)
 	api := router.Group("/api")
 	{
 		studentapi := api.Group("/Student")
@@ -66,7 +68,7 @@ func (r *Routes) InitializeRoutes() *gin.Engine {
 			studentapi.GET("/byStudentId", studentController.GetStudentByStudentId)
 			studentapi.GET("/byEmail", studentController.GetStudentByEmail)
 		}
-		api.POST("/Quiz",quizController.CreateAQuiz)
+		api.POST("/Quiz", quizController.CreateAQuiz)
 		quizapi := api.Group("/Quiz")
 		{
 			quizapi.GET("/:id", quizController.GetAQuizById)

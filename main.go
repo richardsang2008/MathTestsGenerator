@@ -27,6 +27,8 @@ func main() {
 	dbhost:=viper.Get("database.host")
 	hostport:=viper.Get("server.port")
 	release:=viper.Get("Release")
+	logdir:=viper.Get("log.logdir")
+	logfile:=viper.Get("log.logfile")
 	if release =="DEBUG"{
 		gin.SetMode(gin.DebugMode)
 	} else {
@@ -49,7 +51,13 @@ func main() {
 	// Set the router as the default one provided by Gin
 	a := controllers.Routes{}
 	routes:=a.NewRoutes(db)
-	router := routes.InitializeRoutes()
+	var router *gin.Engine
+	if release =="DEBUG" {
+		router = routes.InitializeRoutes(logdir.(string), logfile.(string), true)
+	} else {
+		router = routes.InitializeRoutes(logdir.(string), logfile.(string), false)
+	}
+
 	fmt.Println(fmt.Sprintf("Server is starting at http://localhost:%s",hostport))
 	router.Run(fmt.Sprintf(":%s",hostport))
 }
