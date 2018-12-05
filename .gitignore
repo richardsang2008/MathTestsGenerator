@@ -46,5 +46,7 @@ Thumbs.db
 cache/*
 logs/*
 
+main
+
 vendor
 docs
