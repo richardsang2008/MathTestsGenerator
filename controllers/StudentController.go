@@ -3,7 +3,7 @@ package controllers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/json"
+	"encoding/json"
 	"github.com/jinzhu/gorm"
 	"github.com/richardsang2008/MathTestsGenerator/models/requests"
 	"github.com/richardsang2008/MathTestsGenerator/models/response"
