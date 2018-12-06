@@ -36,7 +36,7 @@ func (r*QuizItemScore) IsValid() (bool,error) {
 	return true, nil
 }
 type CreateQuiz struct{
-	StudentId string `json:StudentId`
+	StudentId string `json:studentId`
 }
 func(r *CreateQuiz) IsValid() (bool,error) {
 	if len(r.StudentId) ==0 {
