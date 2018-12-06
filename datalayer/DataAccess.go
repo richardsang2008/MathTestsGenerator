@@ -99,6 +99,10 @@ func (r *DataAccess) UpdateQuizItemAnswer(id int, answer float64) {
 	quizItem := dbmodels.QuizItem{}
 	r._db.Where("Id = ?", id).First(&quizItem).UpdateColumn("Answer", answer)
 }
+func (r *DataAccess) UpdateQuizScore(id int, score float64) {
+	quiz:=dbmodels.Quiz{}
+	r._db.Where("Id =?",id).First(&quiz).UpdateColumn("Score",score)
+}
 func (r *DataAccess) GetQuizes() []dbmodels.Quiz {
 	var quizes []dbmodels.Quiz
 	r._db.Find(&quizes)

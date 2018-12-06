@@ -18,6 +18,7 @@ type IDataAccess interface {
 	GetQuizItemsByQuizId(quizId int) []dbmodels.QuizItem
 	AddQuizItem(leftOperand float64, rightOperand float64, operator int, answer float64, quizId int) int
 	UpdateQuizItemAnswer(id int, answer float64)
+	UpdateQuizScore(id int, score float64)
 	GetQuizes() []dbmodels.Quiz
 	GetQuiz(id int) dbmodels.Quiz
 	AddQuiz(studentId string, score float64) int

@@ -135,7 +135,7 @@ func (r *Repository) ScoreAQuiz(id int) float64 {
 
 			quiz.Score = roundTo2((float64(correctCount) / (float64(size))))
 			//update the quiz score
-			r.DataAccessObj.UpdateQuizItemAnswer(quiz.Id, quiz.Score)
+			r.DataAccessObj.UpdateQuizScore(quiz.Id, quiz.Score)
 		}
 
 	}
