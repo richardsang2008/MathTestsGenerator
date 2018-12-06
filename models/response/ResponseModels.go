@@ -17,12 +17,12 @@ type StudentInfo struct {
 
 
 type QuizItem struct {
-	Id int
-	LeftOperand float64
-	RightOperand float64
-	Answer float64
-	QuizId int
-	Operator compositemodels.Op
+	Id int `json:"id"`
+	LeftOperand float64 `json:"leftOperand"`
+	RightOperand float64 `json:"rightOperand"`
+	Answer float64 `json:"answer"`
+	QuizId int `json:"quizId"`
+	Operator compositemodels.Op `json:"operator"`
 
 }
 type Quiz struct {
