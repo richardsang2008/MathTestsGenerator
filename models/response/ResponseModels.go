@@ -10,9 +10,9 @@ type StudentInfo struct {
 	FName string `json:"firstName"`
 	MName string `json:"midName"`
 	LName string `json:"lastName"`
-	StudentId string `json:studentId`
+	StudentId string `json:"studentId""`
 	Email string `json:"email"`
-	EnrollmentDate time.Time
+	EnrollmentDate time.Time `json:"enrollmentDate"`
 }
 
 

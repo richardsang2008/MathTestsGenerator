@@ -31,7 +31,7 @@ func newLogger(logdir string, logfile string, enableDebug bool) (*zap.Logger, er
 	cfg.OutputPaths = []string{
 		logpath,
 	}
-	if enableDebug {
+	if enableDebug ==true {
 		cfg.Level = zap.NewAtomicLevelAt(zapcore.DebugLevel)
 	}
 	return cfg.Build()
