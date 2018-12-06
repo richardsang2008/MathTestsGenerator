@@ -74,7 +74,7 @@ func (r *DataAccess) GetQuizItemsByQuizId(quizId int) []dbmodels.QuizItem {
 }
 func (r *DataAccess) GetQuizByStudentIdAndSomeScore(studentId string, score float64) []dbmodels.Quiz {
 	quizes:=[]dbmodels.Quiz{}
-	r._db.Where("Score < ? && StudentId = ?",score,studentId).Find(&quizes)
+	r._db.Where("Score < ? && StudentId = ?",score/100,studentId).Find(&quizes)
 	return quizes
 }
 
